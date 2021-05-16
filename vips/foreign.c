@@ -28,7 +28,11 @@ int load_image_buffer(void *buf, size_t len, int imageType, VipsImage **out)
   }
   else if (imageType == PDF)
   {
-    code = vips_pdfload_buffer(buf, len, out, NULL);
+    VipsArrayDouble *bg;
+    bg = vips_array_double_newv( 1, 0 );
+    gdouble scale;
+    scale = 10;
+    code = vips_pdfload_buffer(buf, len, out, "background", bg, "scale", scale, NULL);
   }
   else if (imageType == SVG)
   {
@@ -158,6 +162,10 @@ int set_heif_options(VipsOperation *operation, SaveParams *params)
     ret = vips_object_set(VIPS_OBJECT(operation), "Q", params->quality, NULL);
   }
 
+  if(!ret)
+  {
+    ret = vips_object_set(VIPS_OBJECT(operation), "compression", VIPS_FOREIGN_HEIF_COMPRESSION_AV1, NULL);
+  }
   return ret;
 }
 
