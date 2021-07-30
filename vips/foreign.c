@@ -28,7 +28,11 @@ int load_image_buffer(void *buf, size_t len, int imageType, VipsImage **out)
   }
   else if (imageType == PDF)
   {
-    code = vips_pdfload_buffer(buf, len, out, NULL);
+    VipsArrayDouble *bg;
+    bg = vips_array_double_newv( 1, 0 );
+    gdouble dpi;
+    dpi = 500;
+    code = vips_pdfload_buffer(buf, len, out, "background", bg, "dpi", dpi, NULL);
   }
   else if (imageType == SVG)
   {
