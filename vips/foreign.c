@@ -46,9 +46,11 @@ int load_image_buffer(LoadParams *params, void *buf, size_t len,
     code = vips_gifload_buffer(buf, len, out, "page", params->page, "n",
                                params->n, NULL);
   } else if (imageType == PDF) {
+    VipsArrayDouble *bg;
+    bg = vips_array_double_newv( 1, 0 );
     // page: int, n: int, dpi: double, scale: double, background: color
     code = vips_pdfload_buffer(buf, len, out, "page", params->page, "n",
-                               params->n, "dpi", params->dpi, NULL);
+                               params->n, "dpi", params->dpi, "background", bg, NULL);
   } else if (imageType == SVG) {
     // dpi: double, scale: double, unlimited: bool
     code = vips_svgload_buffer(buf, len, out, "dpi", params->dpi, "unlimited",
@@ -131,6 +133,9 @@ int set_pdfload_options(VipsOperation *operation, LoadParams *params) {
   MAYBE_SET_INT(operation, params->page, "page");
   MAYBE_SET_INT(operation, params->n, "n");
   MAYBE_SET_DOUBLE(operation, params->dpi, "dpi");
+  VipsArrayDouble *bg;
+  bg = vips_array_double_newv( 1, 0.0 );
+  vips_object_set(VIPS_OBJECT(operation), "background", bg, NULL);
   return 0;
 }
 
